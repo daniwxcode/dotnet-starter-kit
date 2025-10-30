@@ -9,6 +9,7 @@
     <IsPackable>true</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Blazor.FlexLoader" Version="1.6.1" />
     <PackageVersion Include="MediatR.Courier" Version="6.0.0" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.6.0.109712" />
     <PackageVersion Include="MediatR" Version="12.4.1" />

@@ -9,6 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Blazor.FlexLoader" />
 		<PackageReference Include="Blazored.LocalStorage" />
 		<PackageReference Include="MediatR" />
 		<PackageReference Include="MediatR.Courier" />

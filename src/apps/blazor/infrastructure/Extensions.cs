@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using Blazor.FlexLoader.Extensions;
 using Blazored.LocalStorage;
 using FSH.Starter.Blazor.Infrastructure.Api;
 using FSH.Starter.Blazor.Infrastructure.Auth;
@@ -14,6 +15,7 @@ namespace FSH.Starter.Blazor.Infrastructure;
 public static class Extensions
 {
     private const string ClientName = "FullStackHero.API";
+    
     public static IServiceCollection AddClientServices(this IServiceCollection services, IConfiguration config)
     {
         services.AddMudServices(configuration =>
@@ -27,19 +29,26 @@ public static class Extensions
         services.AddBlazoredLocalStorage();
         services.AddAuthentication(config);
         services.AddTransient<IApiClient, ApiClient>();
-        services.AddHttpClient(ClientName, client =>
-        {
-            client.DefaultRequestHeaders.AcceptLanguage.Clear();
-            client.DefaultRequestHeaders.AcceptLanguage.ParseAdd(CultureInfo.DefaultThreadCurrentCulture?.TwoLetterISOLanguageName);
-            client.BaseAddress = new Uri(config["ApiBaseUrl"]!);
-        })
+        
+        var apiBaseUrl = config["ApiBaseUrl"]!;
+        
+        services.AddHttpClient(ClientName, client => ConfigureHttpClient(client, apiBaseUrl))
            .AddHttpMessageHandler<JwtAuthenticationHeaderHandler>()
            .Services
            .AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient(ClientName));
+        
         services.AddTransient<IClientPreferenceManager, ClientPreferenceManager>();
         services.AddTransient<IPreference, ClientPreference>();
         services.AddNotifications();
+        services.AddBlazorFlexLoaderWithHttpInterceptor(client => ConfigureHttpClient(client, apiBaseUrl));
+        
         return services;
-
+    }
+    
+    private static void ConfigureHttpClient(HttpClient client, string baseAddress)
+    {
+        client.DefaultRequestHeaders.AcceptLanguage.Clear();
+        client.DefaultRequestHeaders.AcceptLanguage.ParseAdd(CultureInfo.DefaultThreadCurrentCulture?.TwoLetterISOLanguageName);
+        client.BaseAddress = new Uri(baseAddress);
     }
 }
